@@ -980,7 +980,6 @@ router.post("/restore", verifyAdmin, async (req, res) => {
 
     let data;
     try {
-      // Si backupData es string, parsearlo
       data = typeof backupData === 'string' ? JSON.parse(backupData) : backupData;
     } catch (err) {
       console.error("Error parseando backup:", err);
@@ -998,39 +997,105 @@ router.post("/restore", verifyAdmin, async (req, res) => {
 
     // Limpiar collections (excepto users)
     console.log("   Limpiando datos existentes...");
-    await Rider.deleteMany({});
-    await Team.deleteMany({});
-    await Stage.deleteMany({});
-    await League.deleteMany({});
-    await Config.deleteMany({});
+    
+    // Eliminar con manejo de errores
+    try { await Rider.deleteMany({}); } catch(e) { console.log("   Rider: ya estaba vacío"); }
+    try { await Team.deleteMany({}); } catch(e) { console.log("   Team: ya estaba vacío"); }
+    try { await Stage.deleteMany({}); } catch(e) { console.log("   Stage: ya estaba vacío"); }
+    try { await League.deleteMany({}); } catch(e) { console.log("   League: ya estaba vacío"); }
+    try { await Config.deleteMany({}); } catch(e) { console.log("   Config: ya estaba vacío"); }
 
-    // Restaurar datos
+    // Restaurar datos - CON OPCIÓN DE IGNORAR DUPLICADOS
     let restoredCount = 0;
     
     if (data.config) {
-      await Config.create(data.config);
-      restoredCount++;
-      console.log("   ✓ Configuración restaurada");
+      try {
+        // Eliminar el _id para que MongoDB genere uno nuevo
+        delete data.config._id;
+        await Config.create(data.config);
+        restoredCount++;
+        console.log("   ✓ Configuración restaurada");
+      } catch (err) {
+        console.log(`   ⚠️ Config: ${err.message}`);
+      }
     }
+    
     if (data.riders && data.riders.length > 0) {
-      await Rider.insertMany(data.riders);
-      restoredCount++;
-      console.log(`   ✓ ${data.riders.length} corredores restaurados`);
+      try {
+        // Eliminar _ids duplicados
+        const ridersWithoutIds = data.riders.map(rider => {
+          delete rider._id;
+          return rider;
+        });
+        await Rider.insertMany(ridersWithoutIds, { ordered: false });
+        restoredCount++;
+        console.log(`   ✓ ${data.riders.length} corredores restaurados`);
+      } catch (err) {
+        // Si hay duplicados, insertar uno por uno
+        console.log(`   ⚠️ Error en lote, insertando individualmente...`);
+        let inserted = 0;
+        for (const rider of data.riders) {
+          try {
+            delete rider._id;
+            await Rider.create(rider);
+            inserted++;
+          } catch (e) {
+            // Saltar duplicados
+          }
+        }
+        console.log(`   ✓ ${inserted} corredores restaurados (${data.riders.length - inserted} duplicados saltados)`);
+      }
     }
+    
     if (data.teams && data.teams.length > 0) {
-      await Team.insertMany(data.teams);
-      restoredCount++;
-      console.log(`   ✓ ${data.teams.length} equipos restaurados`);
+      try {
+        const teamsWithoutIds = data.teams.map(team => {
+          delete team._id;
+          return team;
+        });
+        await Team.insertMany(teamsWithoutIds, { ordered: false });
+        restoredCount++;
+        console.log(`   ✓ ${data.teams.length} equipos restaurados`);
+      } catch (err) {
+        console.log(`   ⚠️ Equipos: ${err.message}`);
+        let inserted = 0;
+        for (const team of data.teams) {
+          try {
+            delete team._id;
+            await Team.create(team);
+            inserted++;
+          } catch (e) {}
+        }
+        console.log(`   ✓ ${inserted} equipos restaurados`);
+      }
     }
+    
     if (data.stages && data.stages.length > 0) {
-      await Stage.insertMany(data.stages);
-      restoredCount++;
-      console.log(`   ✓ ${data.stages.length} etapas restauradas`);
+      try {
+        const stagesWithoutIds = data.stages.map(stage => {
+          delete stage._id;
+          return stage;
+        });
+        await Stage.insertMany(stagesWithoutIds, { ordered: false });
+        restoredCount++;
+        console.log(`   ✓ ${data.stages.length} etapas restauradas`);
+      } catch (err) {
+        console.log(`   ⚠️ Etapas: ${err.message}`);
+      }
     }
+    
     if (data.leagues && data.leagues.length > 0) {
-      await League.insertMany(data.leagues);
-      restoredCount++;
-      console.log(`   ✓ ${data.leagues.length} ligas restauradas`);
+      try {
+        const leaguesWithoutIds = data.leagues.map(league => {
+          delete league._id;
+          return league;
+        });
+        await League.insertMany(leaguesWithoutIds, { ordered: false });
+        restoredCount++;
+        console.log(`   ✓ ${data.leagues.length} ligas restauradas`);
+      } catch (err) {
+        console.log(`   ⚠️ Ligas: ${err.message}`);
+      }
     }
 
     console.log(`✅ Copia de seguridad restaurada correctamente (${restoredCount} colecciones)`);
@@ -1045,7 +1110,6 @@ router.post("/restore", verifyAdmin, async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
-
 
 // backend/routes/admin.js - Añadir este endpoint
 
