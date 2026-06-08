@@ -2,32 +2,26 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#006630">
   <title>Fantasy Cycling - Mi Equipo</title>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css">
   <style>
-    .logout-btn {
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    .logout-btn:hover {
-      opacity: 0.8;
+    /* ==================================================
+       ESTILOS RESPONSIVOS PARA MÓVIL
+    ================================================== */
+    
+    * {
+      box-sizing: border-box;
     }
     
-    /* Ajustes para el contenido principal */
-    .page-wrapper {
-      min-height: 100vh;
-      margin-left: 0 !important;
-    }
-    .main-content {
-      padding: 1.5rem;
+    body {
+      overflow-x: hidden;
+      width: 100%;
     }
     
-    /* ================================================== */
-    /* MENÚ DESPLEGABLE DE ARRIBA HACIA ABAJO (TOP TO BOTTOM) */
-    /* ================================================== */
-    
-    /* Top bar donde va el botón */
+    /* Top bar responsive */
     .top-bar {
       background: #1a1a2e;
       padding: 0.75rem 1rem;
@@ -48,20 +42,9 @@
       padding: 0.5rem 0.75rem;
       border-radius: 8px;
       cursor: pointer;
-      transition: all 0.2s ease;
       display: flex;
       align-items: center;
       gap: 0.5rem;
-    }
-    
-    .menu-toggle-btn:hover {
-      background: #004d24;
-      transform: scale(1.02);
-    }
-    
-    /* Contenedor del usuario y logout */
-    .user-menu-container {
-      position: relative;
     }
     
     .user-info-top {
@@ -73,55 +56,14 @@
       cursor: pointer;
       padding: 0.25rem 0.5rem;
       border-radius: 8px;
-      transition: background 0.2s ease;
     }
     
-    .user-info-top:hover {
-      background: rgba(255,255,255,0.1);
-    }
-    
-    /* Dropdown de usuario (Cerrar Sesión) */
-    .user-dropdown {
-      position: absolute;
-      top: 100%;
-      right: 0;
-      margin-top: 0.5rem;
-      background: #1a1a2e;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      min-width: 160px;
-      overflow: hidden;
-      max-height: 0;
-      opacity: 0;
-      transition: max-height 0.3s ease, opacity 0.2s ease;
-      z-index: 1030;
-    }
-    
-    .user-dropdown.open {
-      max-height: 100px;
-      opacity: 1;
-    }
-    
-    .user-dropdown .logout-btn {
-      display: block;
-      padding: 0.75rem 1rem;
-      color: #f8f9fa;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-    
-    .user-dropdown .logout-btn:hover {
-      background: #dc3545;
-      color: white;
-    }
-    
-    /* Menú desplegable de navegación */
+    /* Menú desplegable */
     .dropdown-menu-nav {
       position: relative;
       width: 100%;
       background: #1a1a2e;
       border-radius: 0 0 12px 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       max-height: 0;
       overflow: hidden;
       transition: max-height 0.4s ease-in-out;
@@ -143,118 +85,189 @@
       color: #cbd5e0 !important;
       padding: 0.75rem 1rem;
       border-radius: 8px;
-      transition: all 0.2s ease;
       display: block;
       font-size: 1rem;
     }
     
-    .navbar-nav-horizontal .nav-link:hover {
-      background-color: rgba(255,255,255,0.1);
-      color: white !important;
+    /* Contenido principal - RESPONSIVE */
+    .page-wrapper {
+      min-height: 100vh;
+      margin-left: 0 !important;
     }
     
-    .navbar-nav-horizontal .nav-link.active {
-      background-color: #006630;
-      color: white !important;
+    .main-content {
+      padding: 1rem;
     }
     
-    .navbar-nav-horizontal hr {
-      border-color: #334155;
-      margin: 0.5rem 0;
-      display: none; /* Oculto porque ya no está en el menú */
+    .container-xl {
+      width: 100%;
+      padding-right: 0.5rem;
+      padding-left: 0.5rem;
+      margin-right: auto;
+      margin-left: auto;
     }
     
-    /* Contenedor principal sin márgenes laterales */
-    .page {
-      padding-left: 0;
-      margin-top: 0;
+    /* Tablas responsive - HACERLAS DESPLAZABLES */
+    .table-responsive {
+      display: block;
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
     
-    /* Flecha indicadora */
-    .arrow-down {
-      font-size: 0.7rem;
-      transition: transform 0.2s ease;
+    .table {
+      min-width: 600px;
+      width: 100%;
     }
     
-    /* Ajustes para móviles */
+    /* Tarjetas responsive */
+    .card {
+      margin-bottom: 1rem;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    
+    .card-header {
+      padding: 0.75rem 1rem;
+    }
+    
+    .card-title {
+      font-size: 1.1rem;
+      margin: 0;
+    }
+    
+    .card-body {
+      padding: 1rem;
+    }
+    
+    /* Filtros en columna para móvil */
+    .filters-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .filters-row .col-md-4 {
+      width: 100%;
+      padding: 0;
+    }
+    
+    /* Botones más grandes en móvil */
+    .btn {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem;
+    }
+    
+    .btn-sm {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+    }
+    
+    /* Resumen del equipo en móvil */
+    .team-summary {
+      margin-top: 1rem;
+    }
+    
+    /* Ajustes para pantallas pequeñas */
     @media (max-width: 768px) {
       .main-content {
         padding: 0.75rem;
       }
+      
+      .menu-toggle-btn span:last-child {
+        display: none;
+      }
+      
       .menu-toggle-btn {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         padding: 0.4rem 0.6rem;
       }
-      .menu-toggle-btn span:last-child {
-        display: none; /* Oculta el texto "Menú" en móvil, solo muestra el icono */
-      }
+      
       .user-info-top {
         font-size: 0.8rem;
       }
+      
+      .user-info-top .arrow-down {
+        display: none;
+      }
+      
+      .dropdown-menu-nav.open {
+        max-height: 400px;
+      }
+      
       .navbar-nav-horizontal .nav-link {
         padding: 0.6rem 0.8rem;
         font-size: 0.9rem;
       }
-      .dropdown-menu-nav.open {
-        max-height: 400px;
+      
+      /* Tarjetas de estadísticas en móvil */
+      .stat-number {
+        font-size: 1.2rem;
+      }
+      
+      /* Modal responsive */
+      .modal-dialog {
+        width: 95%;
+        margin: 0.5rem auto;
+      }
+      
+      .modal-body {
+        padding: 1rem;
+      }
+      
+      /* Maillot selector en móvil */
+      .maillot-selector {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      
+      .maillot-option {
+        flex: 0 0 60px;
+        text-align: center;
+      }
+      
+      .maillot-option img {
+        height: 40px;
       }
     }
     
-    /* Añadir estos estilos en el head del dashboard.html o en app.js */
-    .specialties-container {
-      background: #f8f9fa;
-      padding: 1rem;
-      border-radius: 12px;
-    }
-
-    .specialty-item {
-      transition: all 0.2s ease;
-    }
-
-    .specialty-item:hover {
-      transform: translateX(5px);
-    }
-
-    .specialty-item:hover .progress-bar {
-      opacity: 0.9;
-    }
-
-    .progress {
-      background-color: #e9ecef !important;
-      border-radius: 8px !important;
-      overflow: hidden;
-    }
-
-    .progress-bar {
-      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      border-radius: 8px;
-    }
-
-    .info-section {
-      margin-bottom: 1.5rem;
-    }
-
-    .info-section h6 {
-      font-weight: 700;
-      border-left: 4px solid #006630;
-      padding-left: 0.75rem;
-      margin-bottom: 1rem;
-      color: #1a1a2e;
-    }
-
-    .rider-stat-card {
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .rider-stat-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-    }
-
-    .stat-number {
-      font-size: 1.6rem;
-      font-weight: 700;
-      line-height: 1.2;
+    /* Pantallas muy pequeñas (menos de 480px) */
+    @media (max-width: 480px) {
+      .main-content {
+        padding: 0.5rem;
+      }
+      
+      .card-header {
+        padding: 0.6rem 0.75rem;
+      }
+      
+      .card-title {
+        font-size: 1rem;
+      }
+      
+      .card-body {
+        padding: 0.75rem;
+      }
+      
+      .btn {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.8rem;
+      }
+      
+      .table td, .table th {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+      }
+      
+      .stat-number {
+        font-size: 1rem;
+      }
+      
+      .rider-photo {
+        max-width: 100px;
+        height: 100px;
+      }
     }
     
     /* Estilos para el modal de rider */
@@ -272,21 +285,40 @@
       object-position: top;
     }
     
-    /* Estilos para corredores retirados */
+    @media (max-width: 480px) {
+      .rider-photo {
+        max-width: 100px;
+        height: 100px;
+      }
+    }
+    
     .retired-name {
       color: #dc3545 !important;
       text-decoration: line-through;
       opacity: 0.8;
     }
-
-    .retired-name:hover {
-      opacity: 1;
+    
+    .specialties-container {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 12px;
     }
-
-    /* Tooltip para retirados */
-    .retired-tooltip {
-      cursor: help;
-      border-bottom: 1px dotted #dc3545;
+    
+    .progress {
+      background-color: #e9ecef !important;
+      border-radius: 8px !important;
+      overflow: hidden;
+    }
+    
+    /* Fila de equipo en liga */
+    .team-row-in-league {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    
+    .team-row-in-league:hover {
+      background-color: #f0f7ff !important;
+      transform: translateX(3px);
     }
   </style>
 </head>
