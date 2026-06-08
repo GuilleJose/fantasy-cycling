@@ -11,30 +11,52 @@ class PCSScraper {
   }
 
   async fetchHTMLWithCurl(url) {
-    try {
-      const cmd = `curl -s -L -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" -H "Accept-Language: es-ES,es;q=0.9,en;q=0.8" --max-time 60 "${url}"`;
-      
-      const { stdout, stderr } = await execPromise(cmd, { maxBuffer: 1024 * 1024 * 10, timeout: 60000 });
-      
-      if (stderr && !stderr.includes('Warning')) {
-        console.error(`Curl stderr:`, stderr);
-      }
-      
-      if (!stdout || stdout.trim().length === 0) {
-        return null;
-      }
-      
-      if (stdout.includes('cloudflare') || stdout.includes('Just a moment...')) {
-        return null;
-      }
-      
-      return stdout;
-    } catch (error) {
-      console.error(`Error fetching with curl:`, error.message);
+  try {
+    // Mejorar los headers para simular un navegador real
+    const cmd = `curl -s -L \
+      -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
+      -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8" \
+      -H "Accept-Language: es-ES,es;q=0.9,en;q=0.8" \
+      -H "Accept-Encoding: gzip, deflate, br" \
+      -H "Connection: keep-alive" \
+      -H "Upgrade-Insecure-Requests: 1" \
+      -H "Sec-Fetch-Dest: document" \
+      -H "Sec-Fetch-Mode: navigate" \
+      -H "Sec-Fetch-Site: none" \
+      -H "Sec-Fetch-User: ?1" \
+      -H "Cache-Control: max-age=0" \
+      --max-time 60 \
+      --retry 3 \
+      --retry-delay 2 \
+      --compressed \
+      "${url}"`;
+    
+    const { stdout, stderr } = await execPromise(cmd, { 
+      maxBuffer: 1024 * 1024 * 10, 
+      timeout: 60000 
+    });
+    
+    if (stderr && !stderr.includes('Warning')) {
+      console.error(`Curl stderr:`, stderr);
+    }
+    
+    if (!stdout || stdout.trim().length === 0) {
       return null;
     }
+    
+    // Verificar si es Cloudflare
+    if (stdout.includes('cloudflare') || stdout.includes('Just a moment...') || stdout.includes('Checking your browser')) {
+      console.log('⚠️ Cloudflare detectado, esperando...');
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      return null;
+    }
+    
+    return stdout;
+  } catch (error) {
+    console.error(`Error fetching with curl:`, error.message);
+    return null;
   }
-
+}
   // =========================================================================
   // FUNCIÓN AUXILIAR PARA NORMALIZAR POSICIÓN (DNF, DNS, DSQ, OTL)
   // =========================================================================
