@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fantasy Cycling</title>
+
+  <!-- Tabler -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/custom.css">
+</head>
+
+<body>
+  <div class="page">
+    <div class="sticky-top navbar navbar-expand-md d-print-none bg-white">
+      <div class="container-xl">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
+          <a href="index.html">🏁 Fantasy Cycling</a>
+        </h1>
+        <div class="navbar-nav flex-grow-1" id="navbar-menu">
+          <div class="nav navbar-nav">
+            <a href="index.html" class="nav-link">Dashboard</a>
+            <a href="dashboard.html" class="nav-link">Corredores</a>
+            <a href="team.html" class="nav-link active">Mi Equipo</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page-wrapper">
+      <div class="container-xl pt-4">
+        <div id="app-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/js/tabler.min.js"></script>
+  <script src="js/team.js"></script>
+</body>
+</html>

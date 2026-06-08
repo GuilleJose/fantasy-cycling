@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Fantasy Cycling - Mi Equipo</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css">
+  <style>
+    .logout-btn {
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .logout-btn:hover {
+      opacity: 0.8;
+    }
+    
+    /* Ajustes para el contenido principal */
+    .page-wrapper {
+      min-height: 100vh;
+      margin-left: 0 !important;
+    }
+    .main-content {
+      padding: 1.5rem;
+    }
+    
+    /* ================================================== */
+    /* MENÚ DESPLEGABLE DE ARRIBA HACIA ABAJO (TOP TO BOTTOM) */
+    /* ================================================== */
+    
+    /* Top bar donde va el botón */
+    .top-bar {
+      background: #1a1a2e;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 1020;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .menu-toggle-btn {
+      background: #006630;
+      border: none;
+      color: white;
+      font-size: 1.3rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .menu-toggle-btn:hover {
+      background: #004d24;
+      transform: scale(1.02);
+    }
+    
+    /* Contenedor del usuario y logout */
+    .user-menu-container {
+      position: relative;
+    }
+    
+    .user-info-top {
+      color: white;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      border-radius: 8px;
+      transition: background 0.2s ease;
+    }
+    
+    .user-info-top:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    
+    /* Dropdown de usuario (Cerrar Sesión) */
+    .user-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 0.5rem;
+      background: #1a1a2e;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      min-width: 160px;
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.3s ease, opacity 0.2s ease;
+      z-index: 1030;
+    }
+    
+    .user-dropdown.open {
+      max-height: 100px;
+      opacity: 1;
+    }
+    
+    .user-dropdown .logout-btn {
+      display: block;
+      padding: 0.75rem 1rem;
+      color: #f8f9fa;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    
+    .user-dropdown .logout-btn:hover {
+      background: #dc3545;
+      color: white;
+    }
+    
+    /* Menú desplegable de navegación */
+    .dropdown-menu-nav {
+      position: relative;
+      width: 100%;
+      background: #1a1a2e;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease-in-out;
+      z-index: 1010;
+    }
+    
+    .dropdown-menu-nav.open {
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    
+    .navbar-nav-horizontal {
+      display: flex;
+      flex-direction: column;
+      padding: 0.5rem 1rem;
+    }
+    
+    .navbar-nav-horizontal .nav-link {
+      color: #cbd5e0 !important;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      display: block;
+      font-size: 1rem;
+    }
+    
+    .navbar-nav-horizontal .nav-link:hover {
+      background-color: rgba(255,255,255,0.1);
+      color: white !important;
+    }
+    
+    .navbar-nav-horizontal .nav-link.active {
+      background-color: #006630;
+      color: white !important;
+    }
+    
+    .navbar-nav-horizontal hr {
+      border-color: #334155;
+      margin: 0.5rem 0;
+      display: none; /* Oculto porque ya no está en el menú */
+    }
+    
+    /* Contenedor principal sin márgenes laterales */
+    .page {
+      padding-left: 0;
+      margin-top: 0;
+    }
+    
+    /* Flecha indicadora */
+    .arrow-down {
+      font-size: 0.7rem;
+      transition: transform 0.2s ease;
+    }
+    
+    /* Ajustes para móviles */
+    @media (max-width: 768px) {
+      .main-content {
+        padding: 0.75rem;
+      }
+      .menu-toggle-btn {
+        font-size: 1.1rem;
+        padding: 0.4rem 0.6rem;
+      }
+      .menu-toggle-btn span:last-child {
+        display: none; /* Oculta el texto "Menú" en móvil, solo muestra el icono */
+      }
+      .user-info-top {
+        font-size: 0.8rem;
+      }
+      .navbar-nav-horizontal .nav-link {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.9rem;
+      }
+      .dropdown-menu-nav.open {
+        max-height: 400px;
+      }
+    }
+    
+    /* Añadir estos estilos en el head del dashboard.html o en app.js */
+    .specialties-container {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 12px;
+    }
+
+    .specialty-item {
+      transition: all 0.2s ease;
+    }
+
+    .specialty-item:hover {
+      transform: translateX(5px);
+    }
+
+    .specialty-item:hover .progress-bar {
+      opacity: 0.9;
+    }
+
+    .progress {
+      background-color: #e9ecef !important;
+      border-radius: 8px !important;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 8px;
+    }
+
+    .info-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .info-section h6 {
+      font-weight: 700;
+      border-left: 4px solid #006630;
+      padding-left: 0.75rem;
+      margin-bottom: 1rem;
+      color: #1a1a2e;
+    }
+
+    .rider-stat-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .rider-stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+    }
+
+    .stat-number {
+      font-size: 1.6rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    
+    /* Estilos para el modal de rider */
+    #riderModal {
+      z-index: 1100;
+    }
+    
+    .rider-photo {
+      width: 100%;
+      max-width: 160px;
+      height: 160px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      object-fit: cover;
+      object-position: top;
+    }
+    
+    /* Estilos para corredores retirados */
+    .retired-name {
+      color: #dc3545 !important;
+      text-decoration: line-through;
+      opacity: 0.8;
+    }
+
+    .retired-name:hover {
+      opacity: 1;
+    }
+
+    /* Tooltip para retirados */
+    .retired-tooltip {
+      cursor: help;
+      border-bottom: 1px dotted #dc3545;
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOP BAR CON BOTÓN DE MENÚ Y USUARIO -->
+<div class="top-bar">
+  <button class="menu-toggle-btn" id="menuToggleBtn">
+    <span>☰</span> <span>Menú</span>
+  </button>
+  
+  <!-- Usuario con dropdown para cerrar sesión -->
+  <div class="user-menu-container" id="userMenuContainer">
+    <div class="user-info-top" id="userInfoBtn">
+      🚴 <span id="topbarUsername"></span> <span class="arrow-down">▼</span>
+    </div>
+    <div class="user-dropdown" id="userDropdown">
+      <a class="logout-btn" id="logoutBtn">
+        🚪 Cerrar Sesión
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- MENÚ DESPLEGABLE (APARECE DE ARRIBA HACIA ABAJO) -->
+<div class="dropdown-menu-nav" id="dropdownMenu">
+  <div class="navbar-nav-horizontal" id="sidebarMenu">
+    <a class="nav-link" href="#" data-page="inicio">🏠 Inicio</a>
+    <a class="nav-link" href="#" data-page="riders">🚴 Corredores</a>
+    <a class="nav-link" href="#" data-page="team">👥 Mi Equipo</a>
+    <a class="nav-link" href="#" data-page="leagues">🏆 Ligas</a>
+    <a class="nav-link" href="#" data-page="ranking">📊 Clasificación</a>
+    <a class="nav-link" href="#" data-page="results">📋 Resultados</a>
+    <a class="nav-link" href="#" data-page="admin" id="adminMenuLink" style="display: none;">⚙️ PANEL ADMIN</a>
+  </div>
+</div>
+
+<!-- CONTENIDO PRINCIPAL -->
+<div class="page">
+  <div class="page-wrapper">
+    <div class="main-content">
+      <div class="container-xl" id="app-content">
+        <!-- aquí se cargará todo dinámicamente -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALES -->
+<div id="riderModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 1100;">
+  <div class="modal-dialog" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 8px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;">
+    <div class="modal-content">
+      <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid #dee2e6;">
+        <h5 class="modal-title" id="riderModalTitle">Detalles del Ciclista</h5>
+        <button type="button" onclick="closeRiderModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+      </div>
+      <div class="modal-body" id="riderModalBody" style="padding: 1.5rem;">
+        <div style="text-align: center;">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+          <p class="mt-2">Cargando datos...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="teamDetailsModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 1100;">
+  <div class="modal-dialog modal-lg" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 8px; max-width: 900px; width: 95%; max-height: 85vh; overflow-y: auto;">
+    <div class="modal-content">
+      <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid #dee2e6; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <h5 class="modal-title" id="teamDetailsTitle">Detalles del Equipo</h5>
+        <button type="button" onclick="closeTeamDetailsModal()" style="background: none; border: none; font-size: 1.8rem; cursor: pointer; color: white;">&times;</button>
+      </div>
+      <div class="modal-body" id="teamDetailsBody" style="padding: 1.5rem;">
+        <div class="text-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+          <p class="mt-2">Cargando datos del equipo...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Funciones para el menú desplegable de navegación
+  function toggleNavMenu() {
+    const menu = document.getElementById('dropdownMenu');
+    if (menu) {
+      menu.classList.toggle('open');
+    }
+  }
+  
+  function closeNavMenu() {
+    const menu = document.getElementById('dropdownMenu');
+    if (menu) {
+      menu.classList.remove('open');
+    }
+  }
+  
+  // Funciones para el dropdown de usuario (Cerrar Sesión)
+  function toggleUserDropdown() {
+    const dropdown = document.getElementById('userDropdown');
+    if (dropdown) {
+      dropdown.classList.toggle('open');
+    }
+  }
+  
+  function closeUserDropdown() {
+    const dropdown = document.getElementById('userDropdown');
+    if (dropdown) {
+      dropdown.classList.remove('open');
+    }
+  }
+  
+  // Cerrar modal de rider
+  window.closeRiderModal = function() {
+    const modal = document.getElementById("riderModal");
+    if (modal) {
+      modal.style.display = "none";
+    }
+  };
+  
+  // Cerrar modal al hacer click fuera
+  document.addEventListener("click", function(event) {
+    const modal = document.getElementById("riderModal");
+    if (modal && event.target === modal) {
+      closeRiderModal();
+    }
+  });
+  
+  // Configurar eventos después de que el DOM cargue
+  document.addEventListener("DOMContentLoaded", function() {
+    // ========== MENÚ DE NAVEGACIÓN ==========
+    const menuToggleBtn = document.getElementById('menuToggleBtn');
+    const navMenu = document.getElementById('dropdownMenu');
+    
+    if (menuToggleBtn) {
+      menuToggleBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (navMenu) {
+          navMenu.classList.toggle('open');
+        }
+      });
+    }
+    
+    // Cerrar menú de navegación al hacer clic en un enlace
+    const navLinks = document.querySelectorAll('.nav-link[data-page]');
+    navLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        closeNavMenu();
+      });
+    });
+    
+    // ========== DROPDOWN DE USUARIO (CERRAR SESIÓN) ==========
+    const userInfoBtn = document.getElementById('userInfoBtn');
+    const userDropdown = document.getElementById('userDropdown');
+    
+    if (userInfoBtn) {
+      userInfoBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (userDropdown) {
+          userDropdown.classList.toggle('open');
+        }
+      });
+    }
+    
+    // Cerrar dropdown de usuario al hacer clic fuera
+    document.addEventListener('click', function(e) {
+      if (userDropdown && userDropdown.classList.contains('open')) {
+        if (!userInfoBtn?.contains(e.target) && !userDropdown.contains(e.target)) {
+          closeUserDropdown();
+        }
+      }
+      // También cerrar menú de navegación si se hace clic fuera
+      if (navMenu && navMenu.classList.contains('open')) {
+        if (!menuToggleBtn?.contains(e.target) && !navMenu.contains(e.target)) {
+          closeNavMenu();
+        }
+      }
+    });
+    
+    // ========== LOGOUT ==========
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', function() {
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = 'index.html';
+      });
+    }
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/js/tabler.min.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

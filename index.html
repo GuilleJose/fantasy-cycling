@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fantasy Cycling - Login</title>
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css">
+<style>
+  body {
+    background-image: url('assets/portada.png');
+    background-size: cover;
+    background-position: center 30%;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+  
+  /* MÓVIL - Ajuste agresivo */
+  @media (max-width: 768px) {
+    body {
+      background-image: url('assets/portada.png');
+      background-size: 150% auto;
+      background-position: center top;
+      background-attachment: scroll;
+      background-repeat: no-repeat;
+    }
+    
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      backdrop-filter: blur(5px);
+      padding-top: 3rem;
+      padding-bottom: 3rem;
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+  }
+  
+  /* PANTALLAS MUY PEQUEÑAS (menos de 480px) */
+  @media (max-width: 480px) {
+    body {
+      background-size: 200% auto;
+      background-position: 50% 0%;
+    }
+    
+    .login-container {
+      padding-top: 2rem;
+      backdrop-filter: blur(4px);
+    }
+    
+    .login-card, .register-card {
+      margin: 0 1rem;
+    }
+  }
+  
+  /* TABLET (entre 768px y 1024px) */
+  @media (min-width: 769px) and (max-width: 1024px) {
+    body {
+      background-size: cover;
+      background-position: center;
+    }
+  }
+  
+  .login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+  }
+  
+  .login-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    box-shadow: 0 20px 35px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 450px;
+    animation: fadeIn 0.5s ease;
+  }
+  
+  .register-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    box-shadow: 0 20px 35px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 500px;
+    animation: fadeIn 0.5s ease;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .bike-icon {
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+</style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+    // ============================================================
+    // CONFIGURACIÓN DE LA API - PRODUCCIÓN EN RENDER
+    // ============================================================
+    const API_BASE_URL = 'https://fantasy-cycling-api.onrender.com/api';
+    console.log('🔧 API Base URL:', API_BASE_URL);
+    
+    // Verificar sesión al cargar
+    const savedUserId = localStorage.getItem('userId');
+    if (savedUserId) {
+      fetch(`${API_BASE_URL}/auth/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: savedUserId })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.valid) {
+          window.location.href = 'dashboard.html';
+        }
+      })
+      .catch(err => console.error('Error verificando sesión:', err));
+    }
+
+    // Mostrar pantalla de login
+    function showLogin() {
+      document.getElementById('app').innerHTML = `
+        <div class="login-container">
+          <div class="login-card">
+            <div class="card-body p-4 p-md-5">
+              <div class="bike-icon">🚴‍♂️</div>
+              <h2 class="text-center mb-4">Fantasy Cycling</h2>
+              
+              <form id="loginForm">
+                <div class="mb-3">
+                  <label class="form-label">Usuario</label>
+                  <input type="text" class="form-control" id="username" required autocomplete="username">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Contraseña</label>
+                  <input type="password" class="form-control" id="password" required autocomplete="current-password">
+                </div>
+                <div class="mb-3 form-check">
+                  <input type="checkbox" class="form-check-input" id="rememberMe">
+                  <label class="form-check-label">Recordarme</label>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mb-3">Iniciar Sesión</button>
+                <div class="text-center">
+                  <a href="#" onclick="showRegister(); return false;">¿Nuevo usuario? Regístrate aquí</a>
+                  <span class="mx-2">|</span>
+                  <a href="#" onclick="alert('Función en desarrollo. Contacta con el administrador.'); return false;">¿Olvidaste tu contraseña?</a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const rememberMe = document.getElementById('rememberMe').checked;
+
+        try {
+          const response = await fetch(`${API_BASE_URL}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            if (rememberMe) {
+              localStorage.setItem('userId', data.user.id);
+              localStorage.setItem('username', data.user.username);
+              localStorage.setItem('isAdmin', data.user.isAdmin);
+            } else {
+              sessionStorage.setItem('userId', data.user.id);
+              sessionStorage.setItem('username', data.user.username);
+              sessionStorage.setItem('isAdmin', data.user.isAdmin);
+            }
+            window.location.href = 'dashboard.html';
+          } else {
+            alert('Error: ' + data.error);
+          }
+        } catch (err) {
+          alert('Error de conexión: ' + err.message);
+        }
+      });
+    }
+
+    // Mostrar pantalla de registro
+    function showRegister() {
+      document.getElementById('app').innerHTML = `
+        <div class="login-container">
+          <div class="register-card">
+            <div class="card-body p-4 p-md-5">
+              <div class="bike-icon">🚴‍♂️</div>
+              <h2 class="text-center mb-4">Registro de Usuario</h2>
+              
+              <form id="registerForm">
+                <div class="mb-3">
+                  <label class="form-label">Nombre de Usuario *</label>
+                  <input type="text" class="form-control" id="regUsername" required>
+                  <small class="text-muted">El nombre de usuario debe ser único</small>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Contraseña *</label>
+                  <input type="password" class="form-control" id="regPassword" required>
+                  <small class="text-muted">Mínimo 4 caracteres</small>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Confirmar Contraseña *</label>
+                  <input type="password" class="form-control" id="regConfirmPassword" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Correo Electrónico (opcional)</label>
+                  <input type="email" class="form-control" id="regEmail">
+                </div>
+                <button type="submit" class="btn btn-success w-100 mb-3">Registrarse</button>
+                <div class="text-center">
+                  <a href="#" onclick="showLogin(); return false;">¿Ya tienes cuenta? Inicia sesión aquí</a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('registerForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('regUsername').value;
+        const password = document.getElementById('regPassword').value;
+        const confirmPassword = document.getElementById('regConfirmPassword').value;
+        const email = document.getElementById('regEmail').value;
+
+        if (password !== confirmPassword) {
+          alert('Las contraseñas no coinciden');
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_BASE_URL}/auth/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password, confirmPassword, email })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            alert('Registro exitoso. Ahora puedes iniciar sesión.');
+            showLogin();
+          } else {
+            alert('Error: ' + data.error);
+          }
+        } catch (err) {
+          alert('Error de conexión: ' + err.message);
+        }
+      });
+    }
+
+    // Iniciar con pantalla de login
+    showLogin();
+  </script>
+</body>
+</html>
