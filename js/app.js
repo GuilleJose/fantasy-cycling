@@ -188,6 +188,23 @@ function updateRaceNameInCurrentPage() {
   }
 }
 
+// Detectar si es móvil y ajustar
+function isMobileDevice() {
+  return window.innerWidth <= 768;
+}
+
+// Ajustar vista al cargar y al redimensionar
+window.addEventListener('resize', function() {
+  if (isMobileDevice()) {
+    document.body.classList.add('mobile-view');
+  } else {
+    document.body.classList.remove('mobile-view');
+  }
+});
+
+if (isMobileDevice()) {
+  document.body.classList.add('mobile-view');
+}
 
 // inicial
 setupLogout();
